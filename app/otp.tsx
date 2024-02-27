@@ -42,8 +42,8 @@ const otp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const keyboardVerticalOffset = Platform.OS == "ios" ? 90 : 0;
   const [loading, setLoading] = useState(false);
-  // const { signUp, setActive } = useSignUp();
-  // const { signIn } = useSignIn();
+  const { signUp, setActive } = useSignUp();
+  const { signIn } = useSignIn();
 
   const router = useRouter();
 
@@ -53,31 +53,52 @@ const otp = () => {
 
   const sendOTP = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      await signUp!.create({
+        phoneNumber,
+      });
+
+      signUp!.preparePhoneNumberVerification();
+
       router.push(`/verify/${phoneNumber}`);
-    }, 2000);
+    } catch (err) {
+      console.log(err);
+
+      if (isClerkAPIResponseError(err)) {
+        if (err.errors[0].code === "form_identifier_exists") {
+          console.log("user exists");
+          await trySignIn();
+        } else {
+          setLoading(false);
+          Alert.alert("Error", err.errors[0].message);
+        }
+      }
+    }
   };
 
   const trySignIn = async () => {
-    // console.log("trySignIn", phoneNumber);
-    // const { supportedFirstFactors } = await SignIn!.create({
-    //   identifier: phoneNumber,
-    // });
-    // const firstPhoneFactor: any = supportedFirstFactors.find((factor: any) => {
-    //   return factor.strategy === "phone_code";
-    // });
-    // const { phoneNumberId } = firstPhoneFactor;
-    // await signIn!.prepareFirstFactor({
-    //   strategy: "phone_code",
-    //   phoneNumberId,
-    // });
-    // router.push(`/verify/${phoneNumber}?signin=true`);
-    // setLoading(false);
+    const { supportedFirstFactors } = await signIn!.create({
+      identifier: phoneNumber,
+    });
+    const firstPhoneFactor: any = supportedFirstFactors.find((factor: any) => {
+      return factor.strategy === "phone_code";
+    });
+    const { phoneNumberId } = firstPhoneFactor;
+    await signIn!.prepareFirstFactor({
+      strategy: "phone_code",
+      phoneNumberId,
+    });
+    router.push(`/verify/${phoneNumber}?signin=true`);
+    setLoading(false);
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      behavior="padding"
+      keyboardVerticalOffset={keyboardVerticalOffset}
+      style={{ flex: 1 }}
+    >
       <View style={styles.container}>
         <Text style={styles.description}>
           WhatsApp will need to verify your account. Carrier charges may apply

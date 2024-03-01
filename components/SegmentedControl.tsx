@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  useWindowDimensions,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -24,7 +23,6 @@ type SegmentedControlProps = {
 
 const SegmentedControl: React.FC<SegmentedControlProps> = React.memo(
   ({ options, selectedOption, onOptionPress }) => {
-    const { width: windowWidth } = useWindowDimensions();
 
     const internalPadding = 6;
     const segmentedControlWidth = 180;

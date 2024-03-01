@@ -12,11 +12,9 @@ const Layout = () => {
         options={{
           title: "Calls",
           headerLargeTitle: true,
-          headerTransparent: true,
+          headerShadowVisible: true,
           headerBlurEffect: "regular",
-          headerStyle: {
-            backgroundColor: Colors.background,
-          },
+          headerTransparent: true,
           headerSearchBarOptions: {
             placeholder: "Search",
           },

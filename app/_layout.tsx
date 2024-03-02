@@ -95,7 +95,7 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="(modals)/new-chat"
         options={{
           presentation: "modal",
@@ -123,7 +123,7 @@ const InitialLayout = () => {
             hideWhenScrolling: false,
           },
         }}
-      /> */}
+      />
     </Stack>
   );
 };

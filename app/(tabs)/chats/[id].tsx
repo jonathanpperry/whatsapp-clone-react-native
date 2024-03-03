@@ -1,5 +1,5 @@
-// import ChatMessageBox from '@/components/ChatMessageBox';
-// import ReplyMessageBar from '@/components/ReplyMessageBar';
+import ChatMessageBox from "@/components/ChatMessageBox";
+import ReplyMessageBar from "@/components/ReplyMessageBar";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useCallback, useEffect, useRef } from "react";
@@ -77,6 +77,26 @@ const Page = () => {
     );
   };
 
+  const updateRowRef = useCallback(
+    (ref: any) => {
+      if (
+        ref &&
+        replyMessage &&
+        ref.props.children.props.currentMessage?._id === replyMessage._id
+      ) {
+        swipeableRowRef.current = ref;
+      }
+    },
+    [replyMessage]
+  );
+
+  useEffect(() => {
+    if (replyMessage && swipeableRowRef.current) {
+      swipeableRowRef.current.close();
+      swipeableRowRef.current = null;
+    }
+  }, [replyMessage]);
+
   return (
     <ImageBackground
       source={require("@/assets/images/pattern.png")}
@@ -152,17 +172,20 @@ const Page = () => {
         )}
         textInputProps={styles.composer}
         renderInputToolbar={renderInputToolbar}
-        // renderChatFooter={() => (
-        //   <ReplyMessageBar clearReply={() => setReplyMessage(null)} message={replyMessage} />
-        // )}
+        renderChatFooter={() => (
+          <ReplyMessageBar
+            clearReply={() => setReplyMessage(null)}
+            message={replyMessage}
+          />
+        )}
         onLongPress={(context, message) => setReplyMessage(message)}
-        // renderMessage={(props) => (
-        //   <ChatMessageBox
-        //     {...props}
-        //     setReplyOnSwipeOpen={setReplyMessage}
-        //     updateRowRef={updateRowRef}
-        //   />
-        // )}
+        renderMessage={(props) => (
+          <ChatMessageBox
+            {...props}
+            setReplyOnSwipeOpen={setReplyMessage}
+            updateRowRef={updateRowRef}
+          />
+        )}
       />
     </ImageBackground>
   );
